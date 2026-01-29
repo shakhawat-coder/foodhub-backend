@@ -4,6 +4,7 @@ import { auth as betterAuth } from "../lib/auth";
 export enum UserRole {
   ADMIN = "ADMIN",
   USER = "USER",
+  PROVIDER = "PROVIDER",
 }
 declare global {
   namespace Express {
