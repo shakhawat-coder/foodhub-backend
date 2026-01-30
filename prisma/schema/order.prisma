@@ -1,0 +1,37 @@
+
+model Order {
+  id          String      @id @default(uuid())
+  userId      String
+  status      ORDERSTATUS @default(PENDING)
+  totalAmount Float
+  address     String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  items       OrderItem[]
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+
+  @@index([userId])
+  @@map("order")
+}
+model OrderItem {
+  id         String @id @default(uuid())
+  orderId    String
+  mealId     String
+  providerId String
+  quantity   Int
+  price      Float
+  order Order @relation(fields: [orderId], references: [id])
+  meal  Meal  @relation(fields: [mealId], references: [id]) 
+
+  @@index([providerId])
+}
+
+
+enum ORDERSTATUS {
+  PENDING
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+}

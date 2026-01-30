@@ -36,8 +36,8 @@ const getProviderById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get provider" });
   }
 };
-const updateProvider = async (req: Request, res: Response) => {};
-const deleteProvider = async (req: Request, res: Response) => {};
+const updateProvider = async (req: Request, res: Response) => { };
+const deleteProvider = async (req: Request, res: Response) => { };
 
 export const providerController = {
   createProvider,

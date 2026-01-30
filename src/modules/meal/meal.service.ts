@@ -7,6 +7,8 @@ type CreateMealInput = {
   description: string;
   providerId: string;
   categoryId: string;
+  dietaryTypes?: "FLEXITERISN" | "HALAL" | "VEGAN" | "VEGETARIAN";
+  isPopular?: boolean;
 };
 
 const createMeal = async (input: CreateMealInput) => {
@@ -16,8 +18,23 @@ const createMeal = async (input: CreateMealInput) => {
   return meal;
 };
 
-const getAllMeals = async () => {
-  const meals = await prisma.meal.findMany({ include: { category: true } });
+const getAllMeals = async (providerId?: string, providerEmail?: string) => {
+  const where: any = {};
+
+  if (providerId) {
+    where.providerId = providerId;
+  }
+
+  if (providerEmail) {
+    where.provider = {
+      email: providerEmail
+    };
+  }
+
+  const meals = await prisma.meal.findMany({
+    where,
+    include: { category: true },
+  });
   return meals;
 };
 
