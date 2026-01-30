@@ -67,7 +67,14 @@ const getAllOrders = async () => {
     });
 };
 
-const getProviderOrders = async (providerId: string) => {
+const getProviderOrders = async (providerId: string, type?: string) => {
+    let statusFilter = {};
+    if (type === 'incoming') {
+        statusFilter = { status: { in: ['PENDING', 'PREPARING', 'OUT_FOR_DELIVERY'] } };
+    } else if (type === 'history') {
+        statusFilter = { status: { in: ['DELIVERED', 'CANCELLED'] } };
+    }
+
     return await prisma.order.findMany({
         where: {
             items: {
@@ -76,7 +83,8 @@ const getProviderOrders = async (providerId: string) => {
                         providerId: providerId
                     }
                 }
-            }
+            },
+            ...statusFilter
         },
         include: {
             user: true,

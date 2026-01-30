@@ -27,10 +27,12 @@ const getAllOrders = async (req: Request, res: Response) => {
 const getProviderOrders = async (req: Request, res: Response) => {
     try {
         const providerId = req.user?.providerId;
+        const type = req.query.type as string | undefined;
+
         if (!providerId) {
             return res.status(403).json({ error: "Provider profile not found" });
         }
-        const orders = await orderService.getProviderOrders(providerId);
+        const orders = await orderService.getProviderOrders(providerId, type);
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: "Failed to get provider orders" });
