@@ -7,6 +7,7 @@ import { mealRouter } from "./modules/meal/meal.router";
 import { cartRouter } from "./modules/cart/cart.router";
 import { providerRouter } from "./modules/provider/provider.router";
 import { orderRouter } from "./modules/order/order.router";
+import { usersRouter } from "./modules/users/users.router";
 
 const app: Application = express();
 app.use(
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
 
+app.use("/users", usersRouter);
 app.use("/categories", categoryRouter);
 app.use("/meal", mealRouter);
 app.use("/cart", cartRouter);

@@ -57,7 +57,11 @@ const getAllOrders = async () => {
             user: true,
             items: {
                 include: {
-                    meal: true
+                    meal: {
+                        include: {
+                            provider: true
+                        }
+                    }
                 }
             }
         },
@@ -134,7 +138,11 @@ const getOrderById = async (id: string) => {
             user: true,
             items: {
                 include: {
-                    meal: true
+                    meal: {
+                        include: {
+                            provider: true
+                        }
+                    }
                 }
             }
         }
