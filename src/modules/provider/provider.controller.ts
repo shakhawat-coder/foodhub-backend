@@ -36,8 +36,35 @@ const getProviderById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get provider" });
   }
 };
-const updateProvider = async (req: Request, res: Response) => { };
+const updateProvider = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updatedProvider = await providerService.updateProvider(
+      id as string,
+      req.body,
+    );
+    res.status(200).json(updatedProvider);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update provider" });
+  }
+};
 const deleteProvider = async (req: Request, res: Response) => { };
+
+
+
+const getProviderByEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    const provider = await providerService.getProviderByEmail(email as string);
+    if (!provider) {
+      res.status(404).json({ error: "Provider not found" });
+      return;
+    }
+    res.status(200).json(provider);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get provider" });
+  }
+};
 
 export const providerController = {
   createProvider,
@@ -46,4 +73,5 @@ export const providerController = {
   getProviderById,
   updateProvider,
   deleteProvider,
+  getProviderByEmail
 };

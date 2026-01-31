@@ -79,13 +79,35 @@ const getAllProviders = async () => {
   return providers;
 };
 const getsingleProvider = async (id: string) => {
-  const provider = await prisma.provider.findUnique({ where: { id },include: { meals: true } });
+  const provider = await prisma.provider.findUnique({
+    where: { id },
+    include: { meals: true },
+  });
   return provider;
-}
+};
+const updateProvider = async (
+  id: string,
+  data: Partial<CreateProviderInput>,
+) => {
+  const updatedProvider = await prisma.provider.update({
+    where: { id },
+    data,
+  });
+  return updatedProvider;
+};
+const getProviderByEmail = async (email: string) => {
+  const provider = await prisma.provider.findUnique({
+    where: { email },
+    include: { meals: true }
+  });
+  return provider;
+};
 
 export const providerService = {
   createProvider,
   createProvidersFromUsers,
   getAllProviders,
-  getsingleProvider
+  getsingleProvider,
+  updateProvider,
+  getProviderByEmail
 };
