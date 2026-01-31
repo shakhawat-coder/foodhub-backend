@@ -10,7 +10,7 @@ router.post(
   auth(UserRole.ADMIN),
   providerController.createProvidersFromUsers,
 );
-router.get("/", auth(UserRole.ADMIN), providerController.getAllProviders);
+router.get("/", providerController.getAllProviders);
 router.get("/:id", providerController.getProviderById);
 router.put("/:id", providerController.updateProvider);
 router.get("/email/:email", providerController.getProviderByEmail);

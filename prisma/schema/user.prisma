@@ -12,6 +12,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   orders        Order[]
+  isSuspended   Boolean   @default(false)
 
   @@unique([email])
   @@map("user")

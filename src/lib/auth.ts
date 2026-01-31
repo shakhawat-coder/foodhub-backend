@@ -83,7 +83,14 @@ export const auth = betterAuth({
     },
   },
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
-  trustedOrigins: [process.env.APP_URL || "http://localhost:3000"],
+  trustedOrigins: [
+    process.env.APP_URL || "http://localhost:3000",
+    "https://foodhub-frontend-mu.vercel.app",
+    "http://localhost:3000"
+  ],
+  advanced: {
+    useSecureCookies: true, // Required for HTTPS/Production
+  }
 });
 
 export type Auth = typeof auth;
