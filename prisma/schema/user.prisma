@@ -12,6 +12,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   orders        Order[]
+  reviews       Review[]
   isSuspended   Boolean   @default(false)
 
   @@unique([email])

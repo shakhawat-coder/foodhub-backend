@@ -88,12 +88,36 @@ const updateOrderStatus = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
+        const user = req.user;
+
         if (!id || typeof id !== "string") {
             return res.status(400).json({ error: "Order ID is required" });
         }
+
+        const existingOrder = await orderService.getOrderById(id);
+        if (!existingOrder) {
+            return res.status(404).json({ error: "Order not found" });
+        }
+
+        if (user?.role === "USER") {
+            if (existingOrder.userId !== user.id) {
+                return res.status(403).json({ error: "You can only update your own orders." });
+            }
+
+            if (status !== "CANCELLED") { 
+                return res.status(403).json({ error: "You only have permission to cancel your order." });
+            }
+
+            const restrictStatus = ["OUT_FOR_DELIVERY", "DELIVERED"];
+            if (restrictStatus.includes(existingOrder.status)) {
+                return res.status(403).json({ error: `Cannot cancel order. It is already ${existingOrder.status.toLowerCase().replace(/_/g, ' ')}.` });
+            }
+        }
+
         const order = await orderService.updateOrderStatus(id as string, status);
         res.status(200).json(order);
     } catch (error) {
+        console.error("Update Status Error:", error);
         res.status(500).json({ error: "Failed to update order status" });
     }
 };
