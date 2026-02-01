@@ -1,6 +1,6 @@
 model Review {
   id        String   @id @default(uuid())
-  rating    Decimal
+  rating    Decimal  @db.Decimal(2, 1)
   comment   String
   userId    String
   mealId    String

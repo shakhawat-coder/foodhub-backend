@@ -21,7 +21,28 @@ const toggleUserStatus = async (req: Request, res: Response) => {
   }
 };
 
+const updateUserProfile = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, address, image } = req.body;
+
+    const user = await userServices.updateUserProfile(id as string, {
+      name,
+      email,
+      phone,
+      address,
+      image
+    });
+
+    res.status(200).json({ message: "Profile updated successfully", data: user });
+  } catch (error) {
+    console.error("Error in updateUserProfile:", error);
+    res.status(500).json({ error: "Failed to update profile" });
+  }
+};
+
 export const userController = {
   getAllUsers,
-  toggleUserStatus
+  toggleUserStatus,
+  updateUserProfile
 };

@@ -30,7 +30,7 @@ const getProviderOrders = async (req: Request, res: Response) => {
         const type = req.query.type as string | undefined;
 
         if (!providerId) {
-            return res.status(403).json({ error: "Provider profile not found" });
+            return res.status(403).json({ error: "Provider profile not found Pleases Contact Admin" });
         }
         const orders = await orderService.getProviderOrders(providerId, type);
         res.status(200).json(orders);

@@ -5,7 +5,7 @@ const createMeal = async (req: Request, res: Response) => {
   try {
     const providerId = req.user?.providerId;
     if (!providerId) {
-      return res.status(403).json({ error: "Provider profile not found for this account." });
+      return res.status(403).json({ error: "Provider profile not found Pleases Contact Admin" });
     }
 
     const { price, isPopular, ...rest } = req.body;
@@ -82,7 +82,7 @@ const deleteMealItem = async (req: Request, res: Response) => {
     }
 
     if (!providerId) {
-      return res.status(403).json({ error: "Provider profile not found." });
+      return res.status(403).json({ error: "Provider profile not found. Please contact admin" });
     }
 
     // Check if the meal belongs to this provider

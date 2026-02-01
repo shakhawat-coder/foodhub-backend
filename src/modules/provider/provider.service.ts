@@ -75,8 +75,38 @@ const createProvidersFromUsers = async () => {
   return createdProviders;
 };
 const getAllProviders = async () => {
-  const providers = await prisma.provider.findMany();
-  return providers;
+  const providers = await prisma.provider.findMany({
+    include: {
+      meals: {
+        include: {
+          category: true,
+          reviews: true,
+        },
+      },
+    },
+  });
+
+  return providers.map((provider) => {
+    const allReviews = provider.meals.flatMap((meal) => meal.reviews);
+    const reviewCount = allReviews.length;
+    const ratingAverage =
+      reviewCount > 0
+        ? allReviews.reduce((sum, review) => sum + Number(review.rating), 0) /
+        reviewCount
+        : 0;
+
+    // Dynamically derive cuisine from meal categories
+    const cuisines = Array.from(
+      new Set(provider.meals.map((meal) => meal.category?.name).filter(Boolean))
+    ).join(", ");
+
+    return {
+      ...provider,
+      cuisine: cuisines || "Various",
+      rating: Number(ratingAverage.toFixed(1)),
+      review: reviewCount,
+    };
+  });
 };
 const getsingleProvider = async (id: string) => {
   const provider = await prisma.provider.findUnique({
