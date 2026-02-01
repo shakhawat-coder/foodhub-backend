@@ -9,6 +9,7 @@ import { providerRouter } from "./modules/provider/provider.router";
 import { orderRouter } from "./modules/order/order.router";
 import { usersRouter } from "./modules/users/users.router";
 import { reviewRouter } from "./modules/review/review.router";
+import { uploadRouter } from "./modules/upload/upload.router";
 
 const app: Application = express();
 app.use(
@@ -29,6 +30,7 @@ app.use("/cart", cartRouter);
 app.use("/provider", providerRouter);
 app.use("/order", orderRouter);
 app.use("/review", reviewRouter);
+app.use("/upload", uploadRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");
