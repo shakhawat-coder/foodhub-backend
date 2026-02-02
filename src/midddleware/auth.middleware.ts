@@ -70,7 +70,7 @@ const auth = (...roles: UserRole[]) => {
         return res
           .status(403)
           .json({
-            error: `Access denied. This action requires one of the following roles: ${roles.join(", ")}`,
+            error: `Access denied. This action requires one of the following roles: ${roles.join(", ")}. You are currently: ${userRole}`,
           });
       }
 

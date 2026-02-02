@@ -8,11 +8,32 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          return {
+            data: {
+              ...user,
+              emailVerified: true,
+            },
+          };
+        },
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     minPasswordLength: 6,
     async afterSignUp({ user, session, request }: any) {
       try {
+        // Force emailVerified to true immediately after signup
+        // using a direct update. This bypasses better-auth's default behavior.
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: true },
+        });
+
         console.log(
           `[Auth] afterSignUp triggered for user: ${user.email}, role: ${user.role}`,
         );

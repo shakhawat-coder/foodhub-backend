@@ -33,7 +33,7 @@ const getAllMeals = async (providerId?: string, providerEmail?: string) => {
 
   const meals = await prisma.meal.findMany({
     where,
-    include: { category: true },
+    include: { category: true, provider: true },
   });
   return meals;
 };
@@ -41,7 +41,7 @@ const getAllMeals = async (providerId?: string, providerEmail?: string) => {
 const getsingleMeal = async (id: string) => {
   const meal = await prisma.meal.findUnique({
     where: { id },
-    include: { category: true },
+    include: { category: true, provider: true },
   });
   return meal;
 };
