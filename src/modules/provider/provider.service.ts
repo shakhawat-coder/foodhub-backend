@@ -11,7 +11,6 @@ const createProvider = async (input: CreateProviderInput) => {
   const { name, logo, address, phone, email } = input;
 
   try {
-    // Check if provider already exists with this email
     const existingProvider = await prisma.provider.findUnique({
       where: { email },
     });
@@ -37,9 +36,7 @@ const createProvider = async (input: CreateProviderInput) => {
   }
 };
 
-// Create providers from users with PROVIDER role
 const createProvidersFromUsers = async () => {
-  // Find all users with PROVIDER role
   const providerUsers = await prisma.user.findMany({
     where: {
       role: "PROVIDER",
@@ -48,10 +45,8 @@ const createProvidersFromUsers = async () => {
 
   const createdProviders = [];
 
-  // Create provider for each user with PROVIDER role
   for (const user of providerUsers) {
     try {
-      // Check if provider already exists for this email
       const existingProvider = await prisma.provider.findUnique({
         where: { email: user.email },
       });
@@ -95,7 +90,6 @@ const getAllProviders = async () => {
         reviewCount
         : 0;
 
-    // Dynamically derive cuisine from meal categories
     const cuisines = Array.from(
       new Set(provider.meals.map((meal) => meal.category?.name).filter(Boolean))
     ).join(", ");
