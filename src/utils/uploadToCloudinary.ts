@@ -1,12 +1,6 @@
 import { UploadApiResponse } from 'cloudinary';
 import cloudinary from '../lib/cloudinary';
 
-/**
- * Uploads a file buffer to Cloudinary.
- * @param fileBuffer The buffer of the file to upload.
- * @param folder The folder in Cloudinary to store the image.
- * @returns A promise that resolves to the Cloudinary upload response.
- */
 export const uploadToCloudinary = (
     fileBuffer: Buffer,
     folder: string = 'uploads'
@@ -24,7 +18,6 @@ export const uploadToCloudinary = (
             }
         );
 
-        // Write the buffer to the stream
         uploadStream.end(fileBuffer);
     });
 };

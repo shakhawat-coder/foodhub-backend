@@ -22,9 +22,6 @@ app.use(
 app.use(express.json());
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
-
-
-
 app.use("/users", usersRouter);
 app.use("/categories", categoryRouter);
 app.use("/meal", mealRouter);
