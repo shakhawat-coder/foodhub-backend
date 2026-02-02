@@ -7,8 +7,8 @@ const router = express.Router();
 router.post("/", auth(UserRole.PROVIDER), mealController.createMeal);
 router.get("/", mealController.getAllMeals);
 router.get("/:id", mealController.getMealById);
-router.put("/update/:id", auth(UserRole.PROVIDER), mealController.updateMeal);
-router.delete("/delete/:id", auth(UserRole.PROVIDER), mealController.deleteMealItem);
+router.put("/update/:id", auth(UserRole.PROVIDER, UserRole.ADMIN), mealController.updateMeal);
+router.delete("/delete/:id", auth(UserRole.PROVIDER, UserRole.ADMIN), mealController.deleteMealItem);
 
 
 export const mealRouter: Router = router;

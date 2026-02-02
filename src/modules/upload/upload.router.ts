@@ -1,11 +1,9 @@
-import { Router } from "express";
-import { uploadController } from "./upload.controller";
-import { upload } from "../../midddleware/multer";
+import express from 'express';
+import { upload } from '../../midddleware/multer';
+import { uploadFile } from './upload.controller';
 
-import auth, { UserRole } from "../../midddleware/auth.middleware";
+const router = express.Router();
 
-const router = Router();
-
-router.post("/", auth(UserRole.ADMIN, UserRole.PROVIDER), upload.single("image"), uploadController.uploadImage);
+router.post('/', upload.single('file'), uploadFile);
 
 export const uploadRouter = router;

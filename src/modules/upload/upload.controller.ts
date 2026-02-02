@@ -1,26 +1,30 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
+import { uploadToCloudinary } from '../../utils/uploadToCloudinary';
 
-const uploadImage = async (req: Request, res: Response) => {
+export const uploadFile = async (req: Request, res: Response) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ error: "No file uploaded" });
+            return res.status(400).json({
+                success: false,
+                message: 'No file uploaded',
+            });
         }
 
-        const publicId = (req.file as any).filename;
+        const result = await uploadToCloudinary(req.file.buffer);
 
-        const cleanUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/${publicId}`;
-
-        res.status(200).json({ 
-            message: "Image uploaded successfully",
-            url: cleanUrl, 
-            public_id: publicId,
+        return res.status(200).json({
+            success: true,
+            message: 'File uploaded successfully',
+            data: {
+                url: result.secure_url,
+            },
         });
-    } catch (error: any) { 
-        console.error("Upload Error:", error);
-        res.status(500).json({ error: error.message || "Failed to upload image" });
+    } catch (error) {
+        console.error('Upload error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to upload file',
+            error: error instanceof Error ? error.message : 'Unknown error',
+        });
     }
-};
-
-export const uploadController = {
-    uploadImage,
 };
