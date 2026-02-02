@@ -32,7 +32,7 @@ app.use("/review", reviewRouter);
 app.use("/upload", uploadRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.send("Welcome to FoodHub Backend");
 });
 
 export default app;
