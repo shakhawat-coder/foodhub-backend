@@ -24,6 +24,7 @@ const createMeal = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message || "Failed to create meal" });
   }
 };
+
 const getAllMeals = async (req: Request, res: Response) => {
   try {
     const { providerId, providerEmail } = req.query;
@@ -36,6 +37,7 @@ const getAllMeals = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get meals" });
   }
 };
+
 const getMealById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -48,6 +50,7 @@ const getMealById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get meal" });
   }
 };
+
 const updateMeal = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -72,6 +75,7 @@ const updateMeal = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to update meal" });
   }
 };
+
 const deleteMealItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

@@ -6,7 +6,6 @@ const createOrder = async (data: {
     address: string;
     items: { mealId: string; quantity: number; price: number }[];
 }) => {
-    // We need to fetch meal details to get providerId for each item
     const mealIds = data.items.map(item => item.mealId);
     const meals = await prisma.meal.findMany({
         where: { id: { in: mealIds } },

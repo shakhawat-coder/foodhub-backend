@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { providerService } from "./provider.service";
+
+
 const createProvider = async (req: Request, res: Response) => {
   try {
     const provider = await providerService.createProvider(req.body);
@@ -8,6 +10,8 @@ const createProvider = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to create provider" });
   }
 };
+
+
 const createProvidersFromUsers = async (req: Request, res: Response) => {
   try {
     const providers = await providerService.createProvidersFromUsers();
@@ -19,6 +23,8 @@ const createProvidersFromUsers = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to create providers from users" });
   }
 };
+
+
 const getAllProviders = async (req: Request, res: Response) => {
   try {
     const providers = await providerService.getAllProviders();
@@ -27,6 +33,8 @@ const getAllProviders = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get providers" });
   }
 };
+
+
 const getProviderById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -36,6 +44,8 @@ const getProviderById = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to get provider" });
   }
 };
+
+
 const updateProvider = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -48,8 +58,9 @@ const updateProvider = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to update provider" });
   }
 };
-const deleteProvider = async (req: Request, res: Response) => { };
 
+
+const deleteProvider = async (req: Request, res: Response) => { };
 
 
 const getProviderByEmail = async (req: Request, res: Response) => {
