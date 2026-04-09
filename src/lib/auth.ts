@@ -35,14 +35,14 @@ export const auth = betterAuth({
         });
 
         console.log(
-          `[Auth] afterSignUp triggered for user: ${user.email}, role: ${user.role}`,
+          `[Auth] afterSignUp triggered for user: ${user.email}, role: ${user.role}`
         );
 
         // Check if user has PROVIDER role
         if (user.role === "PROVIDER") {
           try {
             console.log(
-              `[Auth] User is a PROVIDER, creating provider record...`,
+              `[Auth] User is a PROVIDER, creating provider record...`
             );
 
             // Try to get phone and address from user object first (since they are additionalFields)
@@ -51,7 +51,7 @@ export const auth = betterAuth({
             const address = user.address || "";
 
             console.log(
-              `[Auth] Extracted phone: "${phone}", address: "${address}"`,
+              `[Auth] Extracted phone: "${phone}", address: "${address}"`
             );
 
             // Create provider record using provider service
@@ -64,18 +64,18 @@ export const auth = betterAuth({
             });
 
             console.log(
-              `[Auth] Provider record created successfully for ${user.email}`,
+              `[Auth] Provider record created successfully for ${user.email}`
             );
           } catch (providerError) {
             console.error(
               "[Auth] Error creating provider record:",
-              providerError,
+              providerError
             );
             // Don't throw - allow signup to succeed even if provider creation fails
           }
         } else {
           console.log(
-            `[Auth] User is NOT a PROVIDER (role: ${user.role}), skipping provider creation.`,
+            `[Auth] User is NOT a PROVIDER (role: ${user.role}), skipping provider creation.`
           );
         }
       } catch (error) {
@@ -88,7 +88,7 @@ export const auth = betterAuth({
     additionalFields: {
       role: {
         type: "string",
-        defaultValue: "USER",
+        defaultValue: "CUSTOMER",
         input: true,
       },
       phone: {
@@ -107,11 +107,11 @@ export const auth = betterAuth({
   trustedOrigins: [
     process.env.APP_URL || "http://localhost:3000",
     "https://foodhub-frontend-mu.vercel.app",
-    "http://localhost:3000"
+    "http://localhost:3000",
   ],
   advanced: {
     useSecureCookies: true, // Required for HTTPS/Production
-  }
+  },
 });
 
 export type Auth = typeof auth;

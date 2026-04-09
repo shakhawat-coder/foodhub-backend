@@ -1,19 +1,22 @@
-
 model Order {
-  id          String      @id @default(uuid())
-  userId      String
-  status      ORDERSTATUS @default(PENDING)
-  totalAmount Float
-  address     String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  items       OrderItem[]
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+  id             String         @id @default(uuid())
+  userId         String
+  riderId        String?
+  status         ORDERSTATUS    @default(PENDING)
+  deliveryStatus DELIVERYSTATUS @default(PENDING_PICKUP)
+  totalAmount    Float
+  address        String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  items          OrderItem[]
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rider          Rider?         @relation(fields: [riderId], references: [id])
 
   @@index([userId])
+  @@index([riderId])
   @@map("order")
 }
+
 model OrderItem {
   id         String @id @default(uuid())
   orderId    String
@@ -21,17 +24,27 @@ model OrderItem {
   providerId String
   quantity   Int
   price      Float
-  order Order @relation(fields: [orderId], references: [id])
-  meal  Meal  @relation(fields: [mealId], references: [id]) 
+  order      Order  @relation(fields: [orderId], references: [id])
+  meal       Meal   @relation(fields: [mealId], references: [id])
 
   @@index([providerId])
 }
 
-
 enum ORDERSTATUS {
   PENDING
+  ACCEPTED
   PREPARING
-  OUT_FOR_DELIVERY
+  READY
+  ACCEPTED_BY_RIDER
+  PICKED_UP
+  ON_THE_WAY
   DELIVERED
   CANCELLED
+}
+
+enum DELIVERYSTATUS {
+  PENDING_PICKUP
+  PICKED_UP
+  ON_THE_WAY
+  DELIVERED
 }

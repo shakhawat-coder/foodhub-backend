@@ -1,0 +1,84 @@
+-- CreateEnum
+DO $$
+BEGIN
+  CREATE TYPE "DELIVERYSTATUS" AS ENUM ('PENDING_PICKUP', 'PICKED_UP', 'ON_THE_WAY', 'DELIVERED');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+-- CreateEnum
+DO $$
+BEGIN
+  CREATE TYPE "RIDERSTATUS" AS ENUM ('PENDING', 'APPROVED', 'BLOCKED', 'REJECTED');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
+
+-- AlterEnum
+BEGIN;
+CREATE TYPE "ORDERSTATUS_new" AS ENUM ('PENDING', 'ACCEPTED', 'PREPARING', 'READY', 'ACCEPTED_BY_RIDER', 'PICKED_UP', 'ON_THE_WAY', 'DELIVERED', 'CANCELLED');
+ALTER TABLE "public"."order" ALTER COLUMN "status" DROP DEFAULT;
+ALTER TABLE "order" ALTER COLUMN "status" TYPE "ORDERSTATUS_new"
+USING (
+  CASE
+    WHEN "status"::text = 'OUT_FOR_DELIVERY' THEN 'ON_THE_WAY'
+    ELSE "status"::text
+  END::"ORDERSTATUS_new"
+);
+ALTER TYPE "ORDERSTATUS" RENAME TO "ORDERSTATUS_old";
+ALTER TYPE "ORDERSTATUS_new" RENAME TO "ORDERSTATUS";
+DROP TYPE "public"."ORDERSTATUS_old";
+ALTER TABLE "order" ALTER COLUMN "status" SET DEFAULT 'PENDING';
+COMMIT;
+
+-- AlterEnum
+BEGIN;
+CREATE TYPE "ROLE_new" AS ENUM ('CUSTOMER', 'PROVIDER', 'ADMIN', 'RIDER', 'MANAGER');
+ALTER TABLE "public"."user" ALTER COLUMN "role" DROP DEFAULT;
+ALTER TABLE "user" ALTER COLUMN "role" TYPE "ROLE_new"
+USING (
+  CASE
+    WHEN "role"::text = 'USER' THEN 'CUSTOMER'
+    ELSE "role"::text
+  END::"ROLE_new"
+);
+ALTER TYPE "ROLE" RENAME TO "ROLE_old";
+ALTER TYPE "ROLE_new" RENAME TO "ROLE";
+DROP TYPE "public"."ROLE_old";
+ALTER TABLE "user" ALTER COLUMN "role" SET DEFAULT 'CUSTOMER';
+COMMIT;
+
+-- AlterTable
+ALTER TABLE "order" ADD COLUMN     "deliveryStatus" "DELIVERYSTATUS" NOT NULL DEFAULT 'PENDING_PICKUP',
+ADD COLUMN     "riderId" TEXT;
+
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "role" SET DEFAULT 'CUSTOMER';
+
+-- CreateTable
+CREATE TABLE "Rider" (
+    "id" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "vehicleType" TEXT NOT NULL,
+    "isAvailable" BOOLEAN NOT NULL DEFAULT false,
+    "status" "RIDERSTATUS" NOT NULL DEFAULT 'PENDING',
+    "lat" DOUBLE PRECISION,
+    "lng" DOUBLE PRECISION,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Rider_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Rider_userId_key" ON "Rider"("userId");
+
+-- CreateIndex
+CREATE INDEX "order_riderId_idx" ON "order"("riderId");
+
+-- AddForeignKey
+ALTER TABLE "order" ADD CONSTRAINT "order_riderId_fkey" FOREIGN KEY ("riderId") REFERENCES "Rider"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Rider" ADD CONSTRAINT "Rider_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;

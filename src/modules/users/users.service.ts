@@ -2,26 +2,26 @@ import { prisma } from "../../lib/prisma";
 
 const getAllUsers = async () => {
   const users = await prisma.user.findMany({
-    where: { role: { in: ["USER", "PROVIDER"] } },
-    orderBy: { createdAt: 'desc' }
+    where: { role: { in: ["CUSTOMER", "PROVIDER", "RIDER", "MANAGER"] } },
+    orderBy: { createdAt: "desc" },
   });
 
   const providers = await prisma.provider.findMany({
-    select: { email: true }
+    select: { email: true },
   });
 
-  const providerEmails = new Set(providers.map(p => p.email));
+  const providerEmails = new Set(providers.map((p) => p.email));
 
-  const usersWithSyncStatus = users.map(user => {
-    if (user.role === 'PROVIDER') {
+  const usersWithSyncStatus = users.map((user) => {
+    if (user.role === "PROVIDER") {
       return {
         ...user,
-        isSynced: providerEmails.has(user.email)
+        isSynced: providerEmails.has(user.email),
       };
     }
     return {
       ...user,
-      isSynced: true // non-providers are always "synced" in this context
+      isSynced: true, // non-providers are always "synced" in this context
     };
   });
 
@@ -47,7 +47,10 @@ interface UpdateUserProfileData {
   image?: string;
 }
 
-const updateUserProfile = async (userId: string, data: UpdateUserProfileData) => {
+const updateUserProfile = async (
+  userId: string,
+  data: UpdateUserProfileData
+) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new Error("User not found");
 
@@ -69,5 +72,5 @@ const updateUserProfile = async (userId: string, data: UpdateUserProfileData) =>
 export const userServices = {
   getAllUsers,
   toggleUserStatus,
-  updateUserProfile
+  updateUserProfile,
 };

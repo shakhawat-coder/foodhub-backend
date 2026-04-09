@@ -4,8 +4,10 @@ import { prisma } from "../lib/prisma";
 
 export enum UserRole {
   ADMIN = "ADMIN",
-  USER = "USER",
+  CUSTOMER = "CUSTOMER",
   PROVIDER = "PROVIDER",
+  RIDER = "RIDER",
+  MANAGER = "MANAGER",
 }
 
 declare global {
@@ -20,6 +22,7 @@ declare global {
         address?: string;
         emailVerified: boolean;
         providerId?: string;
+        riderId?: string;
       };
     }
   }
@@ -65,13 +68,21 @@ const auth = (...roles: UserRole[]) => {
           req.user.providerId = provider.id;
         }
       }
+      if (userRole === UserRole.RIDER) {
+        const rider = await prisma.rider.findUnique({
+          where: { userId: session.user.id },
+        });
+        if (rider) {
+          req.user.riderId = rider.id;
+        }
+      }
 
       if (roles.length && !roles.includes(userRole)) {
-        return res
-          .status(403)
-          .json({
-            error: `Access denied. This action requires one of the following roles: ${roles.join(", ")}. You are currently: ${userRole}`,
-          });
+        return res.status(403).json({
+          error: `Access denied. This action requires one of the following roles: ${roles.join(
+            ", "
+          )}. You are currently: ${userRole}`,
+        });
       }
 
       next();
@@ -83,4 +94,3 @@ const auth = (...roles: UserRole[]) => {
 };
 
 export default auth;
-

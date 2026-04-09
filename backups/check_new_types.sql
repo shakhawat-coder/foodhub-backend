@@ -1,0 +1,1 @@
+SELECT typname FROM pg_type WHERE typname IN ('DELIVERYSTATUS','RIDERSTATUS') ORDER BY typname;

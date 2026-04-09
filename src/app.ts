@@ -11,18 +11,22 @@ import { usersRouter } from "./modules/users/users.router";
 import { reviewRouter } from "./modules/review/review.router";
 import { uploadRouter } from "./modules/upload/upload.router";
 import { bannerRouter } from "./modules/banner/banner.router";
+import { riderRouter } from "./modules/rider/rider.router";
+import { managerRouter } from "./modules/manager/manager.router";
+import { customAuthRouter } from "./modules/auth/auth.router";
 
 const app: Application = express();
 app.use(
   cors({
     origin: process.env.APP_URL || "http://localhost:3000",
     credentials: true,
-  }),
+  })
 );
 
 app.use(express.json());
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
+app.use("/auth", customAuthRouter);
 app.use("/users", usersRouter);
 app.use("/categories", categoryRouter);
 app.use("/meal", mealRouter);
@@ -32,6 +36,8 @@ app.use("/order", orderRouter);
 app.use("/review", reviewRouter);
 app.use("/upload", uploadRouter);
 app.use("/banner", bannerRouter);
+app.use("/rider", riderRouter);
+app.use("/manager", managerRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to FoodHub Backend");
