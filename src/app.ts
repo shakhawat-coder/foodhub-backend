@@ -10,6 +10,7 @@ import { orderRouter } from "./modules/order/order.router";
 import { usersRouter } from "./modules/users/users.router";
 import { reviewRouter } from "./modules/review/review.router";
 import { uploadRouter } from "./modules/upload/upload.router";
+import { bannerRouter } from "./modules/banner/banner.router";
 
 const app: Application = express();
 app.use(
@@ -30,6 +31,7 @@ app.use("/provider", providerRouter);
 app.use("/order", orderRouter);
 app.use("/review", reviewRouter);
 app.use("/upload", uploadRouter);
+app.use("/banner", bannerRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to FoodHub Backend");
