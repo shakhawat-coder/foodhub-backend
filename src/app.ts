@@ -14,11 +14,21 @@ import { bannerRouter } from "./modules/banner/banner.router";
 import { riderRouter } from "./modules/rider/rider.router";
 import { managerRouter } from "./modules/manager/manager.router";
 import { customAuthRouter } from "./modules/auth/auth.router";
+import { searchRouter } from "./modules/search/search.router";
 
 const app: Application = express();
+app.set("trust proxy", 1);
+
+const corsOrigins = [
+  process.env.APP_URL,
+  "http://localhost:3000",
+  "https://foodhub-frontend-mu.vercel.app",
+  ...(process.env.CORS_ORIGINS?.split(",").map((s) => s.trim()) ?? []),
+].filter((o): o is string => Boolean(o));
+
 app.use(
   cors({
-    origin: process.env.APP_URL || "http://localhost:3000",
+    origin: corsOrigins,
     credentials: true,
   })
 );
@@ -38,6 +48,7 @@ app.use("/upload", uploadRouter);
 app.use("/banner", bannerRouter);
 app.use("/rider", riderRouter);
 app.use("/manager", managerRouter);
+app.use("/ai-search", searchRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to FoodHub Backend");

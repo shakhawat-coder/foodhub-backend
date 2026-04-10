@@ -4,7 +4,31 @@ import { prisma } from "./prisma";
 import { providerService } from "../modules/provider/provider.service";
 // If your Prisma file is located elsewhere, you can change the path
 
+/**
+ * Public URL where `/api/auth` is reached in the browser.
+ * When the Next.js app proxies `/api/auth` to this API, cookies must use the **frontend** origin
+ * (e.g. https://your-app.vercel.app), not the API host — or login/signup cookies will not work.
+ */
+const publicAuthBaseURL =
+  process.env.BETTER_AUTH_URL ||
+  process.env.AUTH_URL ||
+  process.env.APP_URL ||
+  (process.env.NODE_ENV !== "production" ? "http://localhost:5000" : "");
+
+function buildTrustedOrigins(): string[] {
+  const raw = [
+    process.env.APP_URL,
+    publicAuthBaseURL,
+    "http://localhost:3000",
+    "https://foodhub-frontend-mu.vercel.app",
+  ].filter(Boolean) as string[];
+  const extra =
+    process.env.AUTH_TRUSTED_ORIGINS?.split(",").map((s) => s.trim()) ?? [];
+  return [...new Set([...raw, ...extra])];
+}
+
 export const auth = betterAuth({
+  ...(publicAuthBaseURL ? { baseURL: publicAuthBaseURL } : {}),
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -103,14 +127,16 @@ export const auth = betterAuth({
       },
     },
   },
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
-  trustedOrigins: [
-    process.env.APP_URL || "http://localhost:3000",
-    "https://foodhub-frontend-mu.vercel.app",
-    "http://localhost:3000",
-  ],
+  trustedOrigins: buildTrustedOrigins(),
   advanced: {
-    useSecureCookies: true, // Required for HTTPS/Production
+    useSecureCookies: process.env.NODE_ENV === "production",
+    // Required when the API sits behind a reverse proxy (Railway, Render, etc.)
+    trustedProxyHeaders: true,
+  },
+  onAPIError: {
+    onError: (error, _ctx) => {
+      console.error("[better-auth]", error);
+    },
   },
 });
 
