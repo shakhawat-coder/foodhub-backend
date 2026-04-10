@@ -38,14 +38,14 @@ const assignRider = async (orderId: string, riderId: string) => {
     const activeOrder = await tx.order.findFirst({
       where: {
         riderId,
-        status: { in: ["ACCEPTED_BY_RIDER", "PICKED_UP", "ON_THE_WAY"] },
+        status: { in: ["ASSIGNED", "PICKED_UP", "ON_THE_WAY"] },
       },
     });
     if (activeOrder) throw new Error("Rider already has an active order");
 
     return tx.order.update({
       where: { id: orderId },
-      data: { riderId, status: "ACCEPTED_BY_RIDER" },
+      data: { riderId, status: "ASSIGNED" },
       include: { rider: { include: { user: true } }, user: true, items: true },
     });
   });

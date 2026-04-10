@@ -74,7 +74,7 @@ const getProviderOrders = async (providerId: string, type?: string) => {
   let statusFilter = {};
   if (type === "incoming") {
     statusFilter = {
-      status: { in: ["PENDING", "ACCEPTED", "PREPARING", "READY"] },
+      status: { in: ["PENDING", "ACCEPTED", "PREPARING", "ASSIGNED", "PICKED_UP", "ON_THE_WAY"] },
     };
   } else if (type === "history") {
     statusFilter = { status: { in: ["DELIVERED", "CANCELLED"] } };

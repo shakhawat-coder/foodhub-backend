@@ -26,6 +26,7 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.35",
     "@ai-sdk/openai": "^3.0.52",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",

@@ -10,7 +10,7 @@ const getRiderByUserId = async (userId: string) => {
 const getAvailableOrders = async () => {
   return prisma.order.findMany({
     where: {
-      status: "READY",
+      status: "PREPARING",
       riderId: null,
     },
     include: {
@@ -34,7 +34,7 @@ const hasActiveOrder = async (riderId: string) => {
     where: {
       riderId,
       status: {
-        in: ["ACCEPTED_BY_RIDER", "PICKED_UP", "ON_THE_WAY"],
+        in: ["ASSIGNED", "PICKED_UP", "ON_THE_WAY"],
       },
     },
   });
@@ -43,11 +43,16 @@ const hasActiveOrder = async (riderId: string) => {
 
 const acceptOrder = async (riderId: string, orderId: string) => {
   return prisma.$transaction(async (tx) => {
+    const rider = await tx.rider.findUnique({ where: { id: riderId } });
+    if (!rider || !rider.isAvailable) {
+      throw new Error("Rider is currently offline or unavailable");
+    }
+
     const hasActive = await tx.order.findFirst({
       where: {
         riderId,
         status: {
-          in: ["ACCEPTED_BY_RIDER", "PICKED_UP", "ON_THE_WAY"],
+          in: ["ASSIGNED", "PICKED_UP", "ON_THE_WAY"],
         },
       },
     });
@@ -59,12 +64,12 @@ const acceptOrder = async (riderId: string, orderId: string) => {
     const updated = await tx.order.updateMany({
       where: {
         id: orderId,
-        status: "READY",
+        status: "PREPARING",
         riderId: null,
       },
       data: {
         riderId,
-        status: "ACCEPTED_BY_RIDER",
+        status: "ASSIGNED",
       },
     });
 
@@ -90,7 +95,7 @@ const updateOrderDeliveryStatus = async (
     throw new Error("Order is not assigned to this rider");
 
   const validTransitions: Record<string, string[]> = {
-    ACCEPTED_BY_RIDER: ["PICKED_UP"],
+    ASSIGNED: ["PICKED_UP"],
     PICKED_UP: ["ON_THE_WAY"],
     ON_THE_WAY: ["DELIVERED"],
   };
