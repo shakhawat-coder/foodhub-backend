@@ -14,6 +14,13 @@ type AnalyticsResponse = {
   bestSellingItem: string;
 };
 
+export type PublicStats = {
+  customers: number;
+  restaurants: number;
+  meals: number;
+  riders: number;
+};
+
 function formatDateKey(d: Date) {
   return d.toISOString().slice(0, 10);
 }
@@ -64,9 +71,11 @@ export async function getAdminAnalytics(days = 7): Promise<AnalyticsResponse> {
   const revenueByDate = new Map<string, number>();
   const categoryCount = new Map<string, number>();
   const deliveryStatusCount = new Map<string, number>([
+    ["PENDING", 0],
     ["PREPARING", 0],
-    ["ASSIGNED", 0],
+    ["ON_THE_WAY", 0],
     ["DELIVERED", 0],
+    ["CANCELLED", 0],
   ]);
   const itemCount = new Map<string, number>();
   const hourCount = new Map<string, number>();
@@ -76,12 +85,10 @@ export async function getAdminAnalytics(days = 7): Promise<AnalyticsResponse> {
     orderCountByDate.set(date, (orderCountByDate.get(date) ?? 0) + 1);
     revenueByDate.set(date, (revenueByDate.get(date) ?? 0) + order.totalAmount);
 
-    if (deliveryStatusCount.has(order.status)) {
-      deliveryStatusCount.set(
-        order.status,
-        (deliveryStatusCount.get(order.status) ?? 0) + 1
-      );
-    }
+    deliveryStatusCount.set(
+      order.status,
+      (deliveryStatusCount.get(order.status) ?? 0) + 1
+    );
 
     const hour = `${order.createdAt.getHours().toString().padStart(2, "0")}:00`;
     hourCount.set(hour, (hourCount.get(hour) ?? 0) + 1);
@@ -161,9 +168,11 @@ export async function getProviderAnalytics(
   const revenueByDate = new Map<string, number>();
   const categoryCount = new Map<string, number>();
   const deliveryStatusCount = new Map<string, number>([
+    ["PENDING", 0],
     ["PREPARING", 0],
-    ["ASSIGNED", 0],
+    ["ON_THE_WAY", 0],
     ["DELIVERED", 0],
+    ["CANCELLED", 0],
   ]);
   const itemCount = new Map<string, number>();
   const hourCount = new Map<string, number>();
@@ -178,12 +187,10 @@ export async function getProviderAnalytics(
     );
     revenueByDate.set(date, (revenueByDate.get(date) ?? 0) + providerRevenue);
 
-    if (deliveryStatusCount.has(order.status)) {
-      deliveryStatusCount.set(
-        order.status,
-        (deliveryStatusCount.get(order.status) ?? 0) + 1
-      );
-    }
+    deliveryStatusCount.set(
+      order.status,
+      (deliveryStatusCount.get(order.status) ?? 0) + 1
+    );
 
     const hour = `${order.createdAt.getHours().toString().padStart(2, "0")}:00`;
     hourCount.set(hour, (hourCount.get(hour) ?? 0) + 1);
@@ -240,5 +247,21 @@ export async function getProviderAnalytics(
     },
     peakHour: topEntry(hourCount, "N/A"),
     bestSellingItem: topEntry(itemCount, "N/A"),
+  };
+}
+
+export async function getPublicStats(): Promise<PublicStats> {
+  const [customers, restaurants, meals, riders] = await Promise.all([
+    prisma.user.count({ where: { role: "CUSTOMER" } }),
+    prisma.provider.count({ where: { isActive: true } }),
+    prisma.meal.count(),
+    prisma.user.count({ where: { role: "RIDER" } }),
+  ]);
+
+  return {
+    customers,
+    restaurants,
+    meals,
+    riders,
   };
 }

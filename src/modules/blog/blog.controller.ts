@@ -27,7 +27,7 @@ const getAllBlogs = async (_req: Request, res: Response) => {
 
 const getBlogById = async (req: Request, res: Response) => {
   try {
-    const blog = await blogService.getBlogById(req.params.id);
+    const blog = await blogService.getBlogById(req.params.id as string);
     if (!blog) {
       return res.status(404).json({ success: false, error: "Blog not found" });
     }
@@ -42,7 +42,7 @@ const getBlogById = async (req: Request, res: Response) => {
 
 const updateBlog = async (req: Request, res: Response) => {
   try {
-    const blog = await blogService.updateBlog(req.params.id, req.body);
+    const blog = await blogService.updateBlog(req.params.id as string, req.body);
     res.status(200).json({
       success: true,
       data: blog,
@@ -54,7 +54,7 @@ const updateBlog = async (req: Request, res: Response) => {
 
 const deleteBlog = async (req: Request, res: Response) => {
   try {
-    await blogService.deleteBlog(req.params.id);
+    await blogService.deleteBlog(req.params.id as string);
     res.status(200).json({
       success: true,
       message: "Blog deleted successfully",

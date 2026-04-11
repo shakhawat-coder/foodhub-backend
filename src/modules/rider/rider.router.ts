@@ -9,6 +9,7 @@ router.get(
   auth(UserRole.RIDER),
   riderController.getAvailableOrders
 );
+router.get("/my-orders", auth(UserRole.RIDER), riderController.getMyOrders);
 router.post(
   "/accept-order/:orderId",
   auth(UserRole.RIDER),
@@ -25,6 +26,7 @@ router.patch(
   riderController.toggleAvailability
 );
 router.get("/history", auth(UserRole.RIDER), riderController.getHistory);
+router.get("/profile", auth(UserRole.RIDER), riderController.getProfile);
 router.patch("/profile", auth(UserRole.RIDER), riderController.updateProfile);
 
 export const riderRouter: Router = router;

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAdminAnalytics, getProviderAnalytics } from "./analytics.service";
+import { getAdminAnalytics, getProviderAnalytics, getPublicStats } from "./analytics.service";
 
 const getAdmin = async (req: Request, res: Response) => {
   try {
@@ -28,7 +28,17 @@ const getProvider = async (req: Request, res: Response) => {
   }
 };
 
+const getPublic = async (req: Request, res: Response) => {
+  try {
+    const data = await getPublicStats();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to load public stats" });
+  }
+};
+
 export const analyticsController = {
   getAdmin,
   getProvider,
+  getPublic,
 };

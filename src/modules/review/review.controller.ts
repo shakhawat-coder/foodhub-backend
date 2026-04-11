@@ -43,7 +43,20 @@ const getMealReviews = async (req: Request, res: Response) => {
     }
 };
 
+const getTestimonials = async (req: Request, res: Response) => {
+    try {
+        console.log("Fetching testimonials...");
+        const testimonials = await reviewService.getTestimonials();
+        console.log(`Found ${testimonials.length} testimonials`);
+        res.status(200).json(testimonials);
+    } catch (error: any) {
+        console.error("Get Testimonials Error:", error);
+        res.status(500).json({ error: "Failed to get testimonials" });
+    }
+};
+
 export const reviewController = {
     createReview,
     getMealReviews,
+    getTestimonials,
 };

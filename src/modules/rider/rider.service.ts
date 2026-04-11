@@ -174,9 +174,34 @@ const createRiderProfile = async (
   });
 };
 
+const getMyAssignedOrders = async (riderId: string) => {
+  return prisma.order.findMany({
+    where: {
+      riderId,
+      status: {
+        in: ["ASSIGNED", "PICKED_UP", "ON_THE_WAY"],
+      },
+    },
+    include: {
+      user: true,
+      items: {
+        include: {
+          meal: {
+            include: {
+              provider: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+  });
+};
+
 export const riderService = {
   getRiderByUserId,
   getAvailableOrders,
+  getMyAssignedOrders,
   hasActiveOrder,
   acceptOrder,
   updateOrderDeliveryStatus,

@@ -116,6 +116,18 @@ const updateProfile = async (req: Request, res: Response) => {
   }
 };
 
+const getProfile = async (req: Request, res: Response) => {
+  try {
+    const riderId = req.user?.riderId;
+    if (!riderId)
+      return res.status(403).json({ error: "Rider profile not found" });
+    const rider = await riderService.getRiderByUserId(req.user!.id);
+    res.status(200).json(rider);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get rider profile" });
+  }
+};
+
 const riderSignup = async (req: Request, res: Response) => {
   try {
     const { name, email, password, phone, vehicleType, address, image } =
@@ -161,8 +173,22 @@ const riderSignup = async (req: Request, res: Response) => {
   }
 };
 
+const getMyOrders = async (req: Request, res: Response) => {
+  try {
+    const riderId = req.user?.riderId;
+    if (!riderId)
+      return res.status(403).json({ error: "Rider profile not found" });
+    const orders = await riderService.getMyAssignedOrders(riderId);
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get rider orders" });
+  }
+};
+
 export const riderController = {
   getAvailableOrders,
+  getMyOrders,
+  getProfile,
   acceptOrder,
   updateOrderStatus,
   toggleAvailability,

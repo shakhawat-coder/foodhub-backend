@@ -10,5 +10,6 @@ router.get(
   analyticsController.getAdmin
 );
 router.get("/provider", auth(UserRole.PROVIDER), analyticsController.getProvider);
+router.get("/public", analyticsController.getPublic);
 
 export const analyticsRouter: Router = router;

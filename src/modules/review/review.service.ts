@@ -36,7 +36,27 @@ const getMealReviews = async (mealId: string) => {
     });
 };
 
+const getTestimonials = async () => {
+    return await prisma.review.findMany({
+        where: {
+            rating: {
+                gte: 4.5, 
+            },
+        },
+        take: 5,
+        include: {
+            user: {
+                select: {
+                    name: true,
+                    image: true,
+                },
+            },
+        },
+    });
+};
+
 export const reviewService = {
     createReview,
     getMealReviews,
+    getTestimonials,
 };
