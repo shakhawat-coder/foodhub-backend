@@ -3,6 +3,9 @@ import { prisma } from "../../lib/prisma";
 const createOrder = async (data: {
   userId: string;
   totalAmount: number;
+  payableAmount: number;
+  discountAmount?: number;
+  couponCode?: string;
   address: string;
   items: { mealId: string; quantity: number; price: number }[];
 }) => {
@@ -15,11 +18,25 @@ const createOrder = async (data: {
   const mealMap = new Map(meals.map((m) => [m.id, m.providerId]));
 
   return await prisma.$transaction(async (tx) => {
-    // 1. Create the order
+    // 1. Mark coupon as used if applied
+    if (data.couponCode) {
+      const coupon = await tx.coupon.findUnique({ where: { code: data.couponCode } });
+      if (coupon) {
+        await tx.userCoupon.updateMany({
+          where: { userId: data.userId, couponId: coupon.id, isUsed: false },
+          data: { isUsed: true },
+        });
+      }
+    }
+
+    // 2. Create the order
     const order = await tx.order.create({
       data: {
         userId: data.userId,
         totalAmount: data.totalAmount,
+        payableAmount: data.payableAmount,
+        discountAmount: data.discountAmount ?? null,
+        couponCode: data.couponCode ?? null,
         address: data.address,
         items: {
           create: data.items.map((item) => ({
@@ -35,7 +52,7 @@ const createOrder = async (data: {
       },
     });
 
-    // 2. Clear the cart
+    // 3. Clear the cart
     const cart = await tx.cart.findUnique({
       where: { userId: data.userId },
     });

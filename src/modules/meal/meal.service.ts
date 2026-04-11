@@ -55,10 +55,27 @@ const deleteMeal = async (id: string) => {
   return meal;
 };
 
+const getReviewedMeals = async (limit: number = 6) => {
+  return await prisma.meal.findMany({
+    where: {
+      reviews: {
+        some: {}
+      }
+    },
+    take: limit,
+    include: {
+      category: true,
+      provider: true,
+      reviews: true
+    }
+  });
+};
+
 export const mealService = {
   createMeal,
   getAllMeals,
   getsingleMeal,
+  getReviewedMeals,
   updateMeal,
   deleteMeal,
 };

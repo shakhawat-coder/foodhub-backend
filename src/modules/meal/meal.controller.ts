@@ -107,10 +107,21 @@ const deleteMealItem = async (req: Request, res: Response) => {
   }
 };
 
+const getReviewedMeals = async (req: Request, res: Response) => {
+  try {
+    const { limit } = req.query;
+    const meals = await mealService.getReviewedMeals(limit ? parseInt(limit as string) : 6);
+    res.status(200).json(meals);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to get reviewed meals" });
+  }
+};
+
 export const mealController = {
   createMeal,
   getAllMeals,
   getMealById,
+  getReviewedMeals,
   updateMeal,
   deleteMealItem,
 };

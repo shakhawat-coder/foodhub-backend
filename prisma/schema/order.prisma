@@ -1,16 +1,19 @@
 model Order {
   id             String         @id @default(uuid())
   userId         String
-  riderId        String?
   status         ORDERSTATUS    @default(PENDING)
-  deliveryStatus DELIVERYSTATUS @default(PENDING_PICKUP)
   totalAmount    Float
+  couponCode     String?
+  discountAmount Float?
+  payableAmount  Float          @default(0)
   address        String
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+  deliveryStatus DELIVERYSTATUS @default(PENDING_PICKUP)
+  riderId        String?
   items          OrderItem[]
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   rider          Rider?         @relation(fields: [riderId], references: [id])
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([riderId])
@@ -24,8 +27,8 @@ model OrderItem {
   providerId String
   quantity   Int
   price      Float
-  order      Order  @relation(fields: [orderId], references: [id])
   meal       Meal   @relation(fields: [mealId], references: [id])
+  order      Order  @relation(fields: [orderId], references: [id])
 
   @@index([providerId])
 }
@@ -35,12 +38,12 @@ enum ORDERSTATUS {
   ACCEPTED
   PREPARING
   READY
-  ASSIGNED
   ACCEPTED_BY_RIDER
   PICKED_UP
   ON_THE_WAY
   DELIVERED
   CANCELLED
+  ASSIGNED
 }
 
 enum DELIVERYSTATUS {

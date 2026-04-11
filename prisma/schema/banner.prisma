@@ -5,9 +5,9 @@ model Banner {
   heading          String
   shortDescription String
   url              String
-  buttonText       String   @default("Shop Now")
   priority         Int      @default(0)
   isActive         Boolean  @default(true)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  buttonText       String   @default("Shop Now")
 }

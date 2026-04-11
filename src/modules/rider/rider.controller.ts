@@ -37,7 +37,7 @@ const acceptOrder = async (req: Request, res: Response) => {
         .json({ error: "Rider must be APPROVED and ONLINE" });
     }
 
-    const order = await riderService.acceptOrder(riderId, orderId);
+    const order = await riderService.acceptOrder(riderId, orderId as string);
     res.status(200).json(order);
   } catch (error: any) {
     res.status(400).json({ error: error.message || "Failed to accept order" });
@@ -58,7 +58,7 @@ const updateOrderStatus = async (req: Request, res: Response) => {
 
     const order = await riderService.updateOrderDeliveryStatus(
       riderId,
-      id,
+      id as string,
       status
     );
     res.status(200).json(order);

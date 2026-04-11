@@ -16,22 +16,22 @@ model Category {
 }
 
 model Meal {
-  id          String     @id @default(uuid())
-  name        String
-  image       String?
-  price       Float
-  description String
-  providerId  String
-  dietaryTypes  DIETSRYTYPE @default(HALAL)
-  isPopular   Boolean @default(false)
-  categoryId  String
-  provider    Provider   @relation(fields: [providerId], references: [id])
-  category    Category   @relation(fields: [categoryId], references: [id])
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  reviews     Review[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String      @id @default(uuid())
+  name         String
+  image        String?
+  price        Float
+  description  String
+  providerId   String
+  dietaryTypes DIETSRYTYPE @default(HALAL)
+  isPopular    Boolean     @default(false)
+  categoryId   String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  cartItems    CartItem[]
+  category     Category    @relation(fields: [categoryId], references: [id])
+  provider     Provider    @relation(fields: [providerId], references: [id])
+  orderItems   OrderItem[]
+  reviews      Review[]
 }
 
 model Provider {
@@ -42,11 +42,10 @@ model Provider {
   phone    String
   email    String  @unique
   isActive Boolean @default(true)
-
-  meals Meal[]
+  meals    Meal[]
 }
 
-enum DIETSRYTYPE{
+enum DIETSRYTYPE {
   FLEXITERISN
   HALAL
   VEGAN

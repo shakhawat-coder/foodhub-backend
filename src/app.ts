@@ -18,6 +18,9 @@ import { searchRouter } from "./modules/search/search.router";
 import { analyticsRouter } from "./modules/analytics/analytics.router";
 import { aiInsightsRouter } from "./modules/ai-insights/ai-insights.router";
 import { blogRouter } from "./modules/blog/blog.router";
+import { contactRouter } from "./modules/contact/contact.router";
+import { subscriberRouter } from "./modules/subscriber/subscriber.router";
+import { couponRouter } from "./modules/coupon/coupon.router";
 
 const app: Application = express();
 app.set("trust proxy", 1);
@@ -55,6 +58,9 @@ app.use("/ai-search", searchRouter);
 app.use("/analytics", analyticsRouter);
 app.use("/ai-insights", aiInsightsRouter);
 app.use("/blogs", blogRouter);
+app.use("/contacts", contactRouter);
+app.use("/subscribers", subscriberRouter);
+app.use("/coupons", couponRouter);
 
 app.get("/", (req, res) => {
   res.send("Welcome to FoodHub Backend");
