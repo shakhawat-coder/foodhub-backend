@@ -5,25 +5,38 @@ import { providerService } from "../modules/provider/provider.service";
 // If your Prisma file is located elsewhere, you can change the path
 
 /**
- * Public URL where `/api/auth` is reached in the browser.
- * When the Next.js app proxies `/api/auth` to this API, cookies must use the **frontend** origin
- * (e.g. https://your-app.vercel.app), not the API host — or login/signup cookies will not work.
+ * BETTER_AUTH_URL — The PUBLIC base URL where `/api/auth` is reachable by browsers.
+ *
+ * Because the Next.js frontend PROXIES all `/api/auth/*` requests to this API,
+ * Google must redirect the user back through the FRONTEND (not directly to this server).
+ * So BETTER_AUTH_URL must be the FRONTEND origin:
+ *
+ *   Production:  BETTER_AUTH_URL=https://foodhub-frontend-mu.vercel.app
+ *   Local:       BETTER_AUTH_URL=http://localhost:3000
+ *
+ * better-auth will build the Google redirect_uri as:
+ *   ${BETTER_AUTH_URL}/api/auth/callback/google
+ * Register that exact URL in Google Cloud Console → Authorized Redirect URIs.
+ *
+ * APP_URL — same frontend origin, used for trusted origins.
  */
 const publicAuthBaseURL =
   process.env.BETTER_AUTH_URL ||
   process.env.AUTH_URL ||
-  process.env.APP_URL ||
-  (process.env.NODE_ENV !== "production" ? "http://localhost:5000" : "");
+  (process.env.NODE_ENV !== "production" ? "http://localhost:3000" : "");
 
 function buildTrustedOrigins(): string[] {
   const raw = [
-    process.env.APP_URL,
-    publicAuthBaseURL,
+    process.env.APP_URL,          // frontend Vercel URL
     "http://localhost:3000",
     "https://foodhub-frontend-mu.vercel.app",
+    // Accept any Vercel preview deployment for this project
+    "https://foodhub-frontend-mu.vercel.app",
   ].filter(Boolean) as string[];
+
   const extra =
     process.env.AUTH_TRUSTED_ORIGINS?.split(",").map((s) => s.trim()) ?? [];
+
   return [...new Set([...raw, ...extra])];
 }
 
@@ -106,6 +119,12 @@ export const auth = betterAuth({
         console.error("[Auth] Error in afterSignUp hook:", error);
         // Don't throw - allow signup to succeed
       }
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
   user: {
