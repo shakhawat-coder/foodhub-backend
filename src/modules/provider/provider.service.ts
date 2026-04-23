@@ -69,6 +69,35 @@ const createProvidersFromUsers = async () => {
   }
   return createdProviders;
 };
+const createProviderFromUser = async (userId: string) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId, role: "PROVIDER" },
+  });
+
+  if (!user) {
+    throw new Error("User not found or is not a provider");
+  }
+
+  const existingProvider = await prisma.provider.findUnique({
+    where: { email: user.email },
+  });
+
+  if (existingProvider) {
+    return existingProvider;
+  }
+
+  const provider = await prisma.provider.create({
+    data: {
+      name: user.name,
+      email: user.email,
+      phone: user.phone || "",
+      address: user.address || "",
+      logo: null,
+    },
+  });
+
+  return provider;
+};
 const getAllProviders = async () => {
   const providers = await prisma.provider.findMany({
     include: {
@@ -130,6 +159,7 @@ const getProviderByEmail = async (email: string) => {
 export const providerService = {
   createProvider,
   createProvidersFromUsers,
+  createProviderFromUser,
   getAllProviders,
   getsingleProvider,
   updateProvider,

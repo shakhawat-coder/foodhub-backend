@@ -25,6 +25,20 @@ const createProvidersFromUsers = async (req: Request, res: Response) => {
 };
 
 
+const syncProvider = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const provider = await providerService.createProviderFromUser(userId as string);
+    res.status(201).json({
+      message: "Provider approved successfully",
+      provider,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to approve provider" });
+  }
+};
+
+
 const getAllProviders = async (req: Request, res: Response) => {
   try {
     const providers = await providerService.getAllProviders();
@@ -84,5 +98,6 @@ export const providerController = {
   getProviderById,
   updateProvider,
   deleteProvider,
-  getProviderByEmail
+  getProviderByEmail,
+  syncProvider
 };

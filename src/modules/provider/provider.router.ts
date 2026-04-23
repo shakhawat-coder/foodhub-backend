@@ -10,6 +10,11 @@ router.post(
   auth(UserRole.ADMIN),
   providerController.createProvidersFromUsers,
 );
+router.post(
+  "/sync/:userId",
+  auth(UserRole.ADMIN),
+  providerController.syncProvider,
+);
 router.get("/", providerController.getAllProviders);
 router.get("/:id", providerController.getProviderById);
 router.put("/:id", providerController.updateProvider);
